@@ -1,0 +1,61 @@
+有两种实现方式：
+
+1）输入crontab -e命令，根据提示直接在当前cron task文本最后面插入如下命令（记得回车）：
+
+* * * * * echo "Hello world!"
+
+2）由于每个用户的定时任务都在/var/spool/cron/crontabs目录下有个与用户名一致的任务文件，因此也可以通过vim直接编辑：
+
+sudo vim /var/spool/cron/crontabs/waterfronter             #注:waterfronter为当前用户名
+
+同样在文件末行插入：
+
+* * * * * echo "Hello world!"
+
+保存退出，并通过crontab -l查看定时任务创建成功。
+
+
+
+2、然后等待，若干分钟后发现屏幕并未输出"Hello world!"怎么回事？！
+
+1）刚开始怀疑是cron服务没有启动，遂执行：
+
+sudo service cron status
+
+发现cron服务是running的，排除；
+
+2）继而怀疑是任务文件创建后未能被系统及时get到，因而执行：
+
+sudo service cron restart
+
+重启cron后问题依旧，排除；
+
+3）于是进一步查看cron运行日志（/var/log/cron.log），但是并未找到相关文件，原因是ubuntu默认没有开cron日志，执行命令：
+
+sudo vim /etc/rsyslog.d/50-default.conf
+
+找到cron.log相关行，将前面注释符#去掉，保存退出，重启rsyslog：
+
+sudo  service rsyslog  restart
+
+执行less -10 /var/log/cron.log再次查看cron运行日志，log出来了，提示如下信息：
+
+No MTA installed, discarding output
+
+原因是cron把屏幕输出都发送到email了，而当前环境并未安装email server，于是系统报错，解决方面就是不要直接向屏幕输出内容，而是重定向到一个文件。
+
+
+
+3、修改任务文件
+
+sudo vim /var/spool/cron/crontabs/waterfronter
+
+将末行改为：
+
+* * * * * echo "Hello world!" >> /tmp/cron_log.txt
+
+保存退出，同时reload cron服务：
+
+sudo service cron reload
+
+若干分钟后查看/tmp/cron_log.txt，“Hello world!”每隔一分钟输出一次，问题解决。
