@@ -1,0 +1,12 @@
+install_dir=$1
+#check install files
+ls node-v10.16.0-linux-x64.tar.gz# clear
+[ -d "${install_dir}" ] && rm -rf ${install_dir}
+mkdir -p ${install_dir}
+tar xzf node-v10.16.0-linux-x64.tar.gz
+cp -fr node-v10.16.0-linux-x64/* ${install_dir}
+sed -i '/NODE_HOME/d' /etc/profile
+echo "export NODE_HOME=${install_dir}" >> /etc/profile
+echo 'export PATH=$NODE_HOME/bin:$PATH' >> /etc/profile
+#create link
+ln -sf ${install_dir}/bin/* /usr/local/bin
