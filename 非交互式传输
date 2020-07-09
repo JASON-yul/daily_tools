@@ -7,3 +7,5 @@ sshpass -p JASONyl123 scp root@10.28.10.78:/mnt/jenkins/*/*/*/target/$package.ja
 #expect "*password:*"
 #send "password\r"
 #interact
+
+也可以用ansible进行传输
