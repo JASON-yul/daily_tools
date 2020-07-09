@@ -30,3 +30,15 @@ git pull --rebase origin master
 把本地库的内容推送到远程
 git push https://gitlab.xxxx/sync.git master
 或git push -u origin master
+
+
+其他：1.配置git：git config --global user.name "username"
+git config --global user.email "username@example.com"
+2.初始化仓库：git init
+3.检查状态：git status
+4.将文件加入仓库：git add 文件
+5.执行提交：git commit -am “标签”
+6.查看提交历史：git log
+7.放弃最后一次提交所做的修改：git checkout .
+8.检查以前提交：git log --pretty=oneline
+9.删除仓库：rm -rf .git
