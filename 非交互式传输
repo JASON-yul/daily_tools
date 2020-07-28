@@ -9,3 +9,70 @@ sshpass -p JASONyl123 scp root@10.28.10.78:/mnt/jenkins/*/*/*/target/$package.ja
 #interact
 
 也可以用ansible进行传输
+
+
+
+1、安装sshpass
+cd /etc/yum.repos.d/
+wget http://download.openSUSE.org/repositories/home:Strahlex/CentOS_CentOS-6/home:Strahlex.repo
+yum install -y sshpass
+
+2、新建IP地址列表文件
+cd /usr/local/sbin
+vim iplist.txt
+192.168.19.142
+192.168.19.143
+
+3、编写脚本
+
+脚本思路：先拷贝需要远程执行的脚本文件到各远程服务器上，然后通过ssh远程执行脚本。
+vim command.sh
+#! /bin/bash
+
+pw=`pwd`
+dest_user=root
+dest_pwd=Admin123
+dest_path=/usr/local/sbin
+script_name=cmd.sh
+
+
+chmod +x $pw/$script_name
+[ ! -f $pw/scpssh.log ] && touch $pw/scpssh.log
+echo begin > $pw/scpssh.log
+
+
+for ip in `cat $pw/iplist.txt`
+do
+    sshpass -p $dest_pwd scp -P22 -o StrictHostKeyChecking=no $pw/$script_name $dest_user@$ip:$dest_path
+    if [ $? = 0 ]
+    then
+        echo $ip scp success |tee -a $pw/scpssh.log
+    else
+        echo $ip scp failed |tee -a $pw/scpssh.log
+        echo  >> $pw/scpssh.log
+    fi
+
+
+    sshpass -p $dest_pwd ssh -P22 -o StrictHostKeyChecking=no $dest_user@$ip $dest_path/$script_name
+    if [ $? = 0 ]
+    then
+        echo $ip ssh success |tee -a $pw/scpssh.log
+    else
+        echo $ip ssh failed |tee -a $pw/scpssh.log
+        echo  >> $pw/scpssh.log
+    fi
+done
+echo End! >> $pw/scpssh.log 
+ 
+说明：dest_path为远程机器的路径，script_name为需要远程执行的脚本名称。
+
+赋予执行权限
+chmod +x command.sh
+
+4、执行脚本
+把需要远程执行的脚本cmd.sh放在/usr/local/sbin/目录中，该远程脚本只是在远程服务器/usr/local/sbin/目录下创建一个文件夹。
+cat cmd.sh
+#! /bin/bash
+cd /usr/local/sbin
+pw=`pwd`
+mkdir $pw/test
