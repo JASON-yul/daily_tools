@@ -1,0 +1,1 @@
+查询详细报错信息： journalctl -xe -u docker
