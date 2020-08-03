@@ -1,7 +1,0 @@
-一、docker镜像推不上去
-43de16c75891: Preparing
-7a5fdfe83ad0: Preparing
-6d6ba3b6ec7b: Waiting
-710700ba4a6b: Waiting
-denied: requested access to the resource is denied
-查看资源池是否已经满了，若是满了，需删除一些docker镜像
