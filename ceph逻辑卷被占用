@@ -1,0 +1,27 @@
+一、报错信息：rbd image rbd/jenkins-master-xxxx is still being used
+1.找到一台能够进入ceph的机器，查看jenkins-master-xxxx对应的ceph id号
+#]rbd info jenkins-master-xxxx
+
+rbd image 'jenkins-master-xxxx':
+	size 500 GB in 128000 objects
+	order 22 (4096 kB objects)
+	block_name_prefix: rbd_data.a99ce63d1b58ba   （id号）
+	format: 2
+	features: layering
+	flags: 
+	parent: rbd/jenkins-master-prod-base-20200108@base
+	overlap: 500 GB
+
+2.找到挂载ceph逻辑卷的机器
+#】rados -p rbd listwatchers rbd_header.a99ce63d1b58ba    (与上面id号相同)
+watcher=192.168.192.2:0/3012018235 client.10848345 cookie=18446462598732840962
+ip：192.168.192.2为ceph挂载的机器
+
+3.进入192.168.192.2，查看机器挂载信息
+rbd showmapped
+可以看到逻辑卷挂载情况
+id pool image                            snap device    
+0  rbd  jenkins-master-Jenkins       -    /dev/rbd0 
+1  rbd  jenkins-master-xxxxx         -    /dev/rbd1
+
+解决方案：取消挂载rbd unmap /dev/rbd1，重新创建Jenkinsmaster
