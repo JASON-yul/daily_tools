@@ -1,3 +1,4 @@
+sed -i 's/.*\(host_key_checking\)/\1/' /etc/ansible/ansible.cfg
 [root@m01 /server/scripts]# cat one_key.sh 
 ansible r1 -m yum -a "name=rsync state=installed" &&\
 ansible r1 -m shell -a "useradd rsync"&&\
