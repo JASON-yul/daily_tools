@@ -29,6 +29,6 @@ mkdir -p /buildCenterLogs
 
 #挂载
 echo -e "/dev/$VGNAME1/$LVNAME1    /data   ext4    defaults 0 0" >> /etc/fstab
-echo -e "/dev/$VGNAME2/$LVNAME2    /data   ext4    defaults 0 0" >> /etc/fstab
+echo -e "/dev/$VGNAME2/$LVNAME2    /buildCenterLogs   ext4    defaults 0 0" >> /etc/fstab
 
 mount -a
