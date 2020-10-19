@@ -1,0 +1,4 @@
+参考文档：https://www.cnblogs.com/longronglang/p/6403268.html
+
+cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
+free -m
