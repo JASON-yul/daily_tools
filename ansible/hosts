@@ -1,0 +1,5 @@
+vim /etc/ansible/hosts
+[k8s]
+k8smaster ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=james
+k8snode1 ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=james
+k8snode2 ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=james
