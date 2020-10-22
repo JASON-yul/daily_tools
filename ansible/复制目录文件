@@ -14,3 +14,16 @@ vim cp.yml   （由于用copy检测过程较慢，所以用synchronize，能节�
       synchronize:
         src: /mnt/ansibe-plybook/hostname/skywalking-agent
         dest: /opt/product
+
+ansible-playbook -i /etc/ansible/hosts  cp.yml
+注:
+1. 拷贝文件时 src=/etc/passwd dest=/tmp/passwd ：
+
+    ① 如果远程客户端 /tmp/passwd 文件存在，则会更新成源文件
+    ② 如果远程客户端 /tmp/passwd 文件不存在，则会直接拷贝源文件
+    ③ 如果远程客户端存在 /tmp/passwd 目录，则会把源文件拷贝到 /tmp/passwd 目录下，最终文件是 /tmp/passwd/passwd
+
+2. 拷贝目录时 src=/etc/ansible dest=/tmp ：
+
+    ① 如果远程客户端 /tmp/ansible 目录不存在，则会直接把源目录拷贝成这个目录名
+    ② 如果远程客户端 /tmp/ansible 目录存在，则会把源目录拷贝到该目录下，最终目录是 /tmp/ansible/ansible
