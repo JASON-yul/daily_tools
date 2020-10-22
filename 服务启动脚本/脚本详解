@@ -1,0 +1,168 @@
+#!/bin/bash
+# chkconfig: 234 80 20
+
+#字符集防止出现乱码
+LANG=en_US.UTF-8                             #zh_CN.UTF-8：你说中文，你在中国，字符集是utf-8，linux系统的语言环境设置成：export LANG=zh_CN.UTF-8，代表中国人使用的unicode字符集
+LANGUAGE=zh_CN.GB18030:zh_CN.GB2312:zh_CN    # zh_CN.GB18030 语言环境是为了支持新的 GB18030 标准编码
+
+. /etc/profile
+. ~/.bash_profile
+
+export JAVA_HOME="/usr/java/latest"
+
+##基础参数
+model=xxxx
+jmxPort=3xxxx
+envS=xxxx
+
+BASE_HOME=/tmp/$model
+
+###时间戳
+TMS=`date '+%s'`
+TTD=`date '+%Y%m%d'`
+
+app=$model-xxxxxxx.jar
+WORK_HOME=$(cd $(dirname $0)/; pwd)   #这个命令写在脚本文件里才有作用，他返回这个脚本文件放置的目录，并可以根据这个目录来定位所要运行程序的相对位置
+
+LOG_DIR=/data/$model
+mkdir -p $LOG_DIR
+mkdir -p /data/skywalking
+
+SPRINGBOOT_USAGE="Usage: $0 {\e[00;32mstart\e[00m|\e[00;31mstop\e[00m|\e[00;31mkill\e[00m|\e[00;32mstatus\e[00m|\e[00;31mrestart\e[00m}"
+ 
+SHUTDOWN_WAIT=20
+ 
+springboot_pid() {
+        echo `ps -fe | grep $BASE_HOME|grep "/$app" | grep -v grep | tr -s " "|cut -d" " -f2`
+}
+
+###
+JVM_OPTS="-Xms2G -Xmx2G -XX:NewRatio=3"   #设置JVM最大可用内存为2g;设置JVM促使内存为2g.此值可以设置与-Xmx相同,以避免每次垃圾回收完成后JVM重新分配内存
+
+###
+JVM_PERFORMANCE_OPTS="-Djava.awt.headles=true \    #处理图片
+-XX:+AlwaysPreTouch \                           #优化JVM启动时间
+-XX:-OmitStackTraceInFastThrow  \              #如果异常没有堆栈信息，需要在JVM中加一个参数-XX:-OmitStackTraceInFastThrow强制打印以便于排错
+-XX:+UseConcMarkSweepGC \                            #设置并发收集器
+-XX:CMSInitiatingOccupancyFraction=75 \           #在你设置了-XX:+UseCMSInitiatingOccupancyOnly的情况下，老年代内存使用率一旦超过75%就会执行CMS GC了
+-XX:+CMSScavengeBeforeRemark"                 #开启在CMS重新标记阶段之前的清除尝试
+
+###
+JVM_HD_OPTS="-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$LOG_DIR/ -XX:ErrorFile=$LOG_DIR/hs_err_pid%p.hprof"    #java堆栈内存溢出则生成*.hprof文件
+
+###垃圾回收统计信息:参考:https://blog.csdn.net/chen978616649/article/details/50380036
+GC_LOG_OPTS="-verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -Xloggc:$LOG_DIR/gc-$model-$TMS.log"   
+
+###
+BOOT_ENV="--spring.profiles.active=$envS"
+
+###java远程调优可采用两种方式进行连接，不启用用户认证https://blog.csdn.net/weixin_42115366/article/details/80162855
+JMX_OPTS="-Dcom.sun.management.jmxremote=true \
+-Dcom.sun.management.jmxremote.port=$jmxPort \
+-Dcom.sun.management.jmxremote.ssl=false \
+-Dcom.sun.management.jmxremote.authenticate=false "
+
+###开启远程调试
+DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,address=58089,suspend=n"
+#dt_socket：使用的通信方式
+#server：是主动连接调试器还是作为服务器等待调试器连接
+#suspend：是否在启动JVM时就暂停，并等待调试器连接
+#address：地址和端口，地址可以省略，两者用冒号分隔
+
+###
+Skywalking_Agent="/opt/product/skywalking-agent"
+
+start() {
+  pid=$(springboot_pid)
+  if [ -n "$pid" ]
+  then
+    echo -e "spring4$model is already running (pid: $pid)"
+  else
+    # Start springboot
+    echo -e "Starting spring4$model"
+    cd $BASE_HOME 
+nohup java -Djava.security.egd=file:/dev/./urandom \         #SecureRandom在java各种组件中使用广泛，可以可靠的产生随机数。大量产生随机数后，性能会较低。使用"-Djava.security.egd=file:/dev/./urandom"加快随机数产生过程。
+-javaagent:$Skywalking_Agent/skywalking-agent.jar \      
+#参考：https://www.jianshu.com/p/2fd56627a3cf。解决以下问题：一个请求会涉及多个服务，服务本身依赖其他服务，整个请求路径构成一个网状调用链，整个调用链中一旦某个节点发生异常，整个调用链的稳定性就会受到影响，
+-Dskywalking.agent.service_name=$model-service-$envS \  #参考：https://blog.csdn.net/lt326030434/article/details/107121511/
+-Dfile.encoding=UTF-8 \
+-Duser.timezone=UTC+8 \
+-Dorg.apache.commons.jelly.tags.fmt.timeZone=Asia/Shanghai \
+$JVM_OPTS \
+$JVM_PERFORMANCE_OPTS \
+$JVM_HD_OPTS \
+$GC_LOG_OPTS \
+-jar $BASE_HOME/$app \
+$BOOT_ENV > $LOG_DIR/$model.log & 
+
+    sleep 3  
+    status
+  fi
+  return 0
+}
+ 
+status(){
+          pid=$(springboot_pid)
+          if [ -n "$pid" ]
+            then echo -e "ok"
+          else
+            echo -e "spring4$model is not running"
+            return 3
+          fi
+}
+
+terminate() {
+	echo -e "Terminating spring4$model"
+	kill -9 $(springboot_pid)
+}
+
+stop() {
+  pid=$(springboot_pid)
+  if [ -n "$pid" ]
+  then
+    echo -e "Stoping spring4$model"
+	kill  $(springboot_pid)
+ 
+    let kwait=$SHUTDOWN_WAIT
+    count=0;
+    until [ `ps -p $pid | grep -c $pid` = '0' ] || [ $count -gt $kwait ]
+    do
+      echo -n -e "\n\e[00;31mwaiting for processes to exit\e[00m";
+      sleep 1
+      let count=$count+1;
+    done
+ 
+    if [ $count -gt $kwait ]; then
+      echo -n -e "\n\e[00;31mkilling processes didn't stop after $SHUTDOWN_WAIT seconds\e[00m"
+      terminate
+    fi
+  else
+    echo -e "spring4$model is not running"
+  fi
+ 
+  return 0
+}
+ 
+case $1 in
+	start)
+	  start
+	;;
+	stop)  
+	  stop
+	;;
+	restart)
+	  stop
+	  start
+	;;
+	status)
+		status
+		exit $?  
+	;;
+	kill)
+		terminate
+	;;		
+	*)
+		echo -e $SPRINGBOOT_USAGE
+	;;
+esac    
+exit 0
