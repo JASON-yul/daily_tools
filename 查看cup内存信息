@@ -1,4 +1,5 @@
 参考文档：https://www.cnblogs.com/longronglang/p/6403268.html
+https://www.cnblogs.com/achengmu/p/9055201.html
 
 cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
 free -m
