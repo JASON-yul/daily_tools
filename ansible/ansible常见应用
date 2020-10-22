@@ -1,3 +1,4 @@
+ansible
 参考文献：https://www.jianshu.com/p/9e58a598e448
 sed -i 's/.*\(host_key_checking\)/\1/' /etc/ansible/ansible.cfg
 [root@m01 /server/scripts]# cat one_key.sh 
@@ -6,3 +7,6 @@ ansible r1 -m shell -a "useradd rsync"&&\
 ansible r1 -m file -a "path=/backup state=directory owner=rsync group=rsync" &&\
 ansible r1 -m copy -a "src=/etc/rsyncd.conf dest=/etc/rsyncd.conf" &&\
 ansible n2 -m shell -a "echo rsync_backup:oldboy >/etc/rsync.password" &&\
+
+ansible-playbook
+参考文件：https://www.cnblogs.com/yanjieli/p/10969299.html
