@@ -1,0 +1,16 @@
+vim /etc/ansible/hosts
+[k8s]
+k8smaster ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=dffdsf   hostname=k8s01
+k8snode1 ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=dffdsf    hostname=k8s02
+k8snode2 ansible_ssh_user=root ansible_ssh_port=22 ansible_ssh_pass=dffdsf    hostname=k8s03
+
+vim cp.yml   （由于用copy检测过程较慢，所以用synchronize，能节约9成的时间）
+---
+- hosts: k8s
+  remote_user: root
+  serial: 5
+  tasks:
+    - name: 主机初始化|拷贝目录文件
+      synchronize:
+        src: /mnt/ansibe-plybook/hostname/skywalking-agent
+        dest: /opt/product
