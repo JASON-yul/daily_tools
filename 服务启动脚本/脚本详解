@@ -72,6 +72,14 @@ DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,address=58089,suspend=n"
 ###
 Skywalking_Agent="/opt/product/skywalking-agent"
 
+或是下面方式
+#（ASYNC_LOG_OPTS="-Dlog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector \  #启动参数方式
+#-DAsyncLogger.RingBufferSize=262144 \             #如果启用了全量异步1.加大两个Disruptor队列的长度
+#-DAsyncLoggerConfig.RingBufferSize=262144 \
+#-Dlog4j2.AsyncQueueFullPolicy=Discard \           #2.设置队列满了时的处理策略：丢弃，否则默认blocking，异步就与同步无异了
+#-Dlog4j2.isThreadContextMapInheritable=false"
+#）
+
 start() {
   pid=$(springboot_pid)
   if [ -n "$pid" ]
