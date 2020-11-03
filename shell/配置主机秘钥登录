@@ -1,0 +1,33 @@
+#!/usr/bin/bash
+
+cd /root/.ssh
+if [[ -f id_rsa ]]
+then
+    echo 'id_rsa存在'
+else
+    ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
+fi
+
+Host=`hostname`
+cat /root/.ssh/authorized_keys |grep $Host
+if [[ $? -eq 0 ]]
+then
+    echo '秘钥已存在'
+else
+    cat ./id_rsa.pub >>./authorized_keys
+fi
+
+chmod 600 /root/.ssh/authorized_keys
+chmod 700 /root/.ssh/
+name=`/usr/bin/python ./ip.py|awk '{print $4}'`          #见python模块内的ip.py
+
+jim=`cat  /etc/ssh/ssh_config |grep StrictH`
+kn="StrictHostKeyChecking no"
+sed -i 's/'"$jim"'/'"$kn"'/' /etc/ssh/sshd_config
+cp /root/.ssh/id_rsa /root/.ssh/${name}-id_rsa
+sshpass -p JASONyl123 scp ./${name}-id_rsa root@仓库ip:/micropackage/ssh_rsa
+
+rm -rf ./${name}-id_rsa  ./ip.py ./ssh.sh
+sed -i 's/'"PasswordAuthentication yes"'/'"PasswordAuthentication no"'/g' /etc/ssh/sshd_config
+sed -i 's/'"#PubkeyAuthentication yes"'/'"PubkeyAuthentication yes"'/g' /etc/ssh/sshd_config
+#systemctl restart sshd
