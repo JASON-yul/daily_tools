@@ -1,0 +1,51 @@
+注：1.执行机尽量不要部署
+    2.部署前先保证执行机能够免密登录.避免后面无法登录
+    3.部署前所有机器配置相同的私钥id_rsa(保存起来用于登录各个机器)和公钥id_rsa.pub拷贝到各个机器的authorized_keys用于识别私钥登录
+
+#!/bin/bash
+name=`cat /etc/services | grep -w 111|sed -n '1p'|awk '{print $4}'`
+systemctl list-unit-files --all |grep $name|sed -n '2p'|awk '{print $1}'|xargs -i systemctl stop {}
+netstat -luntp|grep 111
+if [[ $? -eq 0 ]]
+then
+    echo "security"
+else
+    systemctl list-unit-files --all |grep $name|sed -n '2p'|awk '{print $1}'|xargs -i systemctl stop {}
+fi
+cd 
+yum -y install sssd
+yum install -y openssl-devel
+
+cd /mnt/src
+
+tar -jxvf libtirpc-0.2.2.tar.bz2
+cd libtirpc-0.2.2
+./configure
+make && make install
+
+yum -y remove openssh
+
+cd ../ 
+tar -zxvf  openssh-8.4p1.tar.gz
+cd openssh-8.4p1/
+./configure --prefix=/usr/local  --sysconfdir=/etc/ssh 
+make && make install
+
+cp  ./contrib/redhat/sshd.init    /etc/init.d/sshd
+sed -i 's/SSHD\=\/usr\/sbin\/sshd/SSHD\=\/usr\/local\/sbin\/sshd/' /etc/init.d/sshd
+sed -i 's/PID_FILE\=\/var\/run\/sshd.pid/PID_FILE\=\/run\/sshd.pid/' /etc/init.d/sshd
+sed -i 's/\-A/''/'  /etc/init.d/sshd
+sed -i 's/'"#PubkeyAuthentication yes"'/'"PubkeyAuthentication yes"'/g' /etc/ssh/sshd_config
+systemctl daemon-reload
+systemctl restart sshd
+
+systemctl start firewalld.service
+firewall-cmd --add-icmp-block=timestamp-reply
+firewall-cmd --add-icmp-block=timestamp-request
+firewall-cmd --reload
+systemctl stop firewalld.service
+
+sudo iptables -A INPUT -p icmp --icmp-type 13 -j DROP
+sudo iptables -A OUTPUT -p icmp --icmp-type 14 -j DROP
+sysctl -w net.ipv4.tcp_timestamps=0
+systemctl restart sshd
