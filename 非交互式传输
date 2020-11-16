@@ -7,6 +7,14 @@ sshpass -p JASONyl123 scp root@10.28.10.78:/mnt/jenkins/*/*/*/target/$package.ja
 登录远程主机并执行命令：sshpass -p JASONyl123 ssh -o StrictHostKeyChecking=no 7.222.121.105
 登录远程主机并执行命令后退出：sshpass -p JASONyl123 ssh -o StrictHostKeyChecking=no 7.222.121.105 ls -l
 
+用多条命令
+$sudo sshpass -p $password ssh -t -oStrictHostKeyChecking=no $username@$ipaddress << EOF
+  command_one
+  command_two
+  command_three
+EOF
+
+
 #expect "*password:*"
 #send "password\r"
 #interact
