@@ -1,3 +1,5 @@
+命令参考：https://blog.csdn.net/u013185349/article/details/104593209
+
 一、本地主机配置公钥
 sshd-keygen
 cat /root/.ssh/id_rsa.pub
