@@ -1,0 +1,10 @@
+#]ceph health detail
+参见：https://blog.csdn.net/u010317005/article/details/79242794
+
+HEALTH_ERR 1 scrub errors; Possible data damage: 1 pg inconsistent
+OSD_SCRUB_ERRORS 1 scrub errors
+PG_DAMAGED Possible data damage: 1 pg inconsistent
+    pg 1.b2e is active+clean+scrubbing+deep+inconsistent+repair, acting [133,6]
+
+解决方案：
+ ceph pg repair 1.b2e
