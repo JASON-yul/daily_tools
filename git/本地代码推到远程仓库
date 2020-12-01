@@ -34,6 +34,9 @@ git remote add origin https://gitlab.xxx/sync.git
 获取远程库与本地同步合并（如果远程库不为空必须做这一步，否则后面的提交会失败）
 git pull --rebase origin master
 
+如果需要mr的话可以
+git mr .
+
 把本地库的内容推送到远程
 git push https://gitlab.xxxx/sync.git master
 或git push -u origin master
