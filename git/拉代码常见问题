@@ -1,2 +1,5 @@
 参考文档：https://www.cnblogs.com/study10000/p/12858192.html
 
+问题：git拉代码时报错，docker PHP容器安装sqlserver扩展，，SSL routines:ssl_choose_client_version:unsupported protocol
+分析：原因一，openssl服务版本低于客户端版本，按照上述连接升级openssl
+      原因二，将jenkinsmaster整体升级，防止因centos或是Ubuntu个别系统内出现openssl版本过高而导致的偶现情况
