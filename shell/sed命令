@@ -9,7 +9,7 @@ sed -i '/m/a\x' test.file    表示向test.file文件里匹配m字符串的行�
 比如向a.txt文件的首行添加123456789
 # sed -i '1i\123456789' a.txt
 
-比如向a.txt文件的第3行添加hhhhh
+比如向a.txt文件的第3行添加hhhhh，如果第三行有文字，则添加内容会自动添加到第4行
 # sed -i '3a\hhhhh' a.txt
 
 比如向a.txt文件匹配abcd字符串的行的前面添加66666
