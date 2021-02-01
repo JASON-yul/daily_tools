@@ -22,3 +22,8 @@ sed -i '/m/a\x' test.file    表示向test.file文件里匹配m字符串的行�
 然后再向第3行添加" runinterval = 600"内容
 # /bin/sed -i '2i\ server=puppet01.test.cn' /etc/puppet/puppet.conf
 # /bin/sed -i '3i\ runinterval = 600' /etc/puppet/puppet.conf
+
+
+sed命令删除包含特定字符行
+删除包含"xxx"的行
+sed -i '/xxx/d' filename
