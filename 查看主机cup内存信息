@@ -4,6 +4,6 @@ https://www.cnblogs.com/achengmu/p/9055201.html
 cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
 free -m
 
-
+cat /proc/进程pid/status
 2.查看进程对cpu内存的使用情况
 https://www.cnblogs.com/xuanbjut/p/11564744.html
