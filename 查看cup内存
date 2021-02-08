@@ -10,6 +10,6 @@ https://www.cnblogs.com/wangmo/p/9486569.html
 2.查看进程对cpu内存的使用情况
 https://www.cnblogs.com/xuanbjut/p/11564744.html
 
-3.命令jstat  -gc  pid 1000 1000
-
+3.命令jstat  -gc  pid 1000 1000     #查看线程命令EC和OC加起来就是启动时的内存
+  
   jstack  pid
