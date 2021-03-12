@@ -1,5 +1,6 @@
 一、报错信息：rbd image rbd/jenkins-master-xxxx is still being used
-1.找到一台能够进入ceph的机器，查看jenkins-master-xxxx对应的ceph id号
+1.kubectl describe pod jenkins-master-tru-65b6b458dd-dnl66 |grep Ceph
+找到一台能够进入ceph的机器，查看jenkins-master-xxxx对应的ceph id号
 #]rbd info jenkins-master-xxxx
 
 rbd image 'jenkins-master-xxxx':
