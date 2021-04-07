@@ -11,5 +11,10 @@ ansible n2 -m shell -a "echo rsync_backup:oldboy >/etc/rsync.password" &&\
 ansible-playbook
 参考文件：https://www.cnblogs.com/yanjieli/p/10969299.html
 
+get_url模块：
+下载远程url内容：ansible webservers -m get_url -a "url=https://10.2.2.2vue.tar.gz dest=/mnt/ mode=0755 force=yes"
 
+yum、apt下载模块
+ansible webservers -m yum -a "name=curl state=latest"
+ansible webservers -m apt -a "pkg=curl state=latest"
 
