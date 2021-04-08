@@ -1,0 +1,28 @@
+#定义主机与用户
+- hosts: webservers
+  vars:
+    worker_processes: 4
+    num_cpus: 4
+    max_open_file: 65506
+    root: /data
+  remote_user: root
+#hosts定义了操作对象，可以是主机或组
+#vars下定义了4个变量
+#remote_user指定远程操作用户名为root
+
+#任务列表
+  tasks:
+  - name: ensure nginx is at the latest version
+    yum: pkg=nginx state=latest
+  - name: write the nginx config file
+    template: src=/home/test/ansible/nginx/nginx.conf  dest=/etc/nginx/nginx.conf
+    notify:
+    - restart nginx
+#template对本地配置版本文件进行渲染并同步到目标主机，src管理端文件存放位置，dest为目标主机配置文件位置
+  - name: ensure nginx is running
+    service: name=nginx state=started
+#当目标主机配置文件发生变化后，通知处理程序（handlers）来触发后续动作，触发是通过handlers中定义的name标签来识别的。
+#name标签的值要与上面的‘notify’的值一致，即restart nginx
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted
