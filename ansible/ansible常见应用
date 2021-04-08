@@ -18,3 +18,29 @@ yum、apt下载模块
 ansible webservers -m yum -a "name=curl state=latest"
 ansible webservers -m apt -a "pkg=curl state=latest"
 
+cron模块
+nsible webservers -m cron -a "name='testong' minute='2' job='ls'"
+显示：
+#Ansible: testong
+2 * * * * ls
+
+mount模块
+ansible webservers -m mount -a "name=/mnt/data  src=/dev/mapper/data_disk1-data_disk1  fstype=ext4 opts=defaults  state=present"
+显示：vim /etc/fstab
+/dev/mapper/data_disk1-data_disk1 /mnt/data ext4 defaults 0 0
+
+service模块：启动，停止等
+ansible webservers -m service -a "name=nginx state=reloaded"
+ansible webservers -m service -a "name=nginx state=stopped"
+ansible webservers -m service -a "name=nginx state=restarted"
+
+user模块
+添加test用户：
+ansible webservers -m user -a "name=test comment='john doe'"
+comment参数：此参数用于指定用户的注释信息。
+删除test用户
+ansible webservers -m user -a "name=test state=absent remove=yes"
+remove参数：当state的值设置为absent时，表示要删除远程主机中的用户。但是在删除用户时，不会删除用户的家目录等信息，这是因为remove参数的默认值为no，如果设置为yes，在删除用户的同时，会删除用户的家目录。
+当 state=absent 并且 remove=yes 时，相当于执行 “userdel --remove” 命令
+
+
