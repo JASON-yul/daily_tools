@@ -1,0 +1,28 @@
+1.整体部署架构图
+├── group_vars
+│   └── all
+├── hosts
+├── README.md
+├── roles
+│   ├── common
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   ├── main.yml
+│   │   │   └── springboot.yml
+│   │   └── vars
+│   │       └── main.yml
+│   └── trace
+│       ├── handlers
+│       │   └── main.yml
+│       ├── tasks
+│       │   └── main.yml
+│       └── vars
+│           └── main.yml
+├── scripts
+│   ├── bootloader
+│   │   └── spring4excluded
+│   └── mvnscripts
+│       └── compile.sh
+└── site.yml
+2.架构图分解
