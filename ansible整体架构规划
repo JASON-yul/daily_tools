@@ -1,19 +1,22 @@
 1.整体部署架构图
 ├── group_vars
-│   └── all
-├── hosts
+│   └── all       #all代表所有主机，用于定义改组的变量，次变量只用于本组
+│   └── webservers
+├── hosts         #定义主机的组
 ├── README.md
-├── roles
-│   ├── common
-│   │   ├── handlers
-│   │   │   └── main.yml
-│   │   ├── tasks
-│   │   │   ├── main.yml
+├── roles                #
+│   ├── common
+│   │   ├── handlers          #处理程序
+│   │   │   └── main.yml      #对应的配置文件，以下相同
+│   │   ├── templates          #模板
+│   │   │   └── ntp.conf
+│   │   ├── tasks               #任务列表
+│   │   │   ├── main.yml
 │   │   │   └── springboot.yml
-│   │   └── vars
-│   │       └── main.yml
-│   └── trace
-│       ├── handlers
+│   │   └── vars               #变量
+│   │       └── main.yml         #此文件变量的优先级高于上面group_vars的all里定义的变量
+│   └── web
+│       ├── handlers
 │       │   └── main.yml
 │       ├── tasks
 │       │   └── main.yml
@@ -24,5 +27,86 @@
 │   │   └── spring4excluded
 │   └── mvnscripts
 │       └── compile.sh
-└── site.yml
+└── site.yml     #全局配置文件.引用两个角色模块，实现不同功能，对应的一个是common目录，一个是web目录。
+                  也可以引用更多角色，这些角色由hosts参数来绑定角色对应的主机或组，如excluded，mrexcluded。
+
 2.架构图分解
+
+2.1 组变量：webservers
+## -------------- global ------------##
+# set PPATH
+remotepath: /opt/product/
+localpath : /home/playbook/
+servicepath: /mnt/
+urlheader: http://10.28.22.208:8080
+
+# deploy config
+deploy_group: root
+deploy_gid: 0
+deploy_user: root
+deploy_uid: 0
+
+# "all" means all modules
+compile:
+  - all
+## -------------- excluded --------------##
+excluded:
+  http:
+    listen: xxxx
+
+## -------------- mrexcluded --------------##
+mrexcluded:
+  http:
+    listen: xxx
+    
+##端口监听
+port:
+  http:
+    excluded: "{{ excluded['http']['listen'] }}"
+    mrexcluded: "{{ mrexcluded['http']['listen'] }}"
+    
+##健康检查
+health:
+  excluded: /stats
+  mrexcluded: /stats
+
+2.2 主机组hosts
+[mrexcluded]
+ip地址  ansible_ssh_user=root	 ansible_ssh_pass=密码
+
+[excluded]
+ip地址  ansible_ssh_user=root	 ansible_ssh_pass=密码
+
+或
+[webservers]
+192.168.2.5
+192.168.5.3
+
+2.3 全局配置文件：site.yml
+---
+# Site Configuration
+- hosts: excluded
+  roles:
+    - common
+    - excluded
+  tags:
+    - excluded
+
+- hosts: mrexcluded
+  roles:
+    - common
+    - mrexcluded
+  tags:
+    - mrexcluded
+  或
+  ---
+# Site Configuration
+- hosts: all
+  roles:
+    - common
+
+- hosts: webservers
+  roles:
+    - web
+
+
