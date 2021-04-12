@@ -1,0 +1,27 @@
+参考：https://www.jianshu.com/p/4a029091b705
+dmesg -T
+[Mon Apr 12 14:13:05 2021] Out of memory: Kill process 121778 (java) score 915 or sacrifice child            
+#内存超了，系统会自动杀死占用内存最大的进程
+
+[Mon Apr 12 14:13:05 2021] Killed process 121778 (java) total-vm:75704828kB, anon-rss:63401524kB, file-rss:0kB, shmem-rss:0kB
+[Mon Apr 12 14:13:11 2021] docker0: port 1(veth3a296b4) entered disabled state
+[Mon Apr 12 14:13:12 2021] docker0: port 1(veth3a296b4) entered disabled state
+[Mon Apr 12 14:13:12 2021] device veth3a296b4 left promiscuous mode
+[Mon Apr 12 14:13:12 2021] docker0: port 1(veth3a296b4) entered disabled state
+[Mon Apr 12 14:13:12 2021] docker0: port 1(veth6c5816d) entered blocking state
+[Mon Apr 12 14:13:12 2021] docker0: port 1(veth6c5816d) entered disabled state
+[Mon Apr 12 14:13:12 2021] device veth6c5816d entered promiscuous mode
+[Mon Apr 12 14:13:12 2021] IPv6: ADDRCONF(NETDEV_UP): veth6c5816d: link is not ready
+[Mon Apr 12 14:13:12 2021] docker0: port 1(veth6c5816d) entered blocking state
+[Mon Apr 12 14:13:12 2021] docker0: port 1(veth6c5816d) entered forwarding state
+[Mon Apr 12 14:13:12 2021] docker0: port 1(veth6c5816d) entered disabled state
+[Mon Apr 12 14:13:13 2021] IPv6: ADDRCONF(NETDEV_CHANGE): veth6c5816d: link becomes ready
+[Mon Apr 12 14:13:13 2021] docker0: port 1(veth6c5816d) entered blocking state
+[Mon Apr 12 14:13:13 2021] docker0: port 1(veth6c5816d) entered forwarding state
+[Mon Apr 12 14:16:34 2021] unregister_netdevice: waiting for lo to become free. Usage count = 1
+[Mon Apr 12 14:16:36 2021] net_ratelimit: 14 callbacks suppressed
+[Mon Apr 12 14:38:21 2021] net_ratelimit: 8 callbacks suppressed
+
+解：内存不足，自动查杀了进程，即杀死了项目进程，项目不能启动
+这个问题的原因是low memory耗尽。“内核使用low memory来跟踪所有的内存分配，一旦low memory耗尽，就会查杀进程，以保持系统的正常运转。
+说白了 OOM Killer 就是一层保护机制，用于避免 Linux 在内存不足的时候不至于出太严重的问题，把无关紧要的进程杀掉
