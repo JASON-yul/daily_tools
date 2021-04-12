@@ -112,7 +112,7 @@ ip地址  ansible_ssh_user=root	 ansible_ssh_pass=密码
 handlers：main.yml
 ---
 - name: restart {{ module }}
-  shell: "/etc/init.d/spring4{{ module }} restart"
+  shell: "/etc/init.d/spring4{{ module }} restart"        #在common的springboot.yml中已经将scripts目录下的spring4{{ module }}此文件拷贝到对应的目录下。
 #  ignore_errors: yes
 
 tasks：main.yml       
