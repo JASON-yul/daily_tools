@@ -26,3 +26,9 @@
   handlers:
     - name: restart nginx
       service: name=nginx state=restarted
+
+
+注：可以通过ansible webservers -m setup|grep hostname查找组内主机名称，并引用
+     "ansible_hostname": "kwepwebenv07569",
+     
+可以直接引用此变量 {{ ansible_hostname }}
