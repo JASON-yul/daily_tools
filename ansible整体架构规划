@@ -7,12 +7,12 @@
 ├── roles                #
 │   ├── common
 │   │   ├── handlers          #处理程序
-│   │   │   └── main.yml      #对应的配置文件，以下相同
+│   │   │   └── main.yml      #对应的配置文件，用于处理程序，重启或检查等
 │   │   ├── templates          #模板
 │   │   │   └── ntp.conf
 │   │   ├── tasks               #任务列表
-│   │   │   ├── main.yml
-│   │   │   └── springboot.yml
+│   │   │   ├── main.yml        #执行任务
+│   │   │   └── springboot.yml
 │   │   └── vars               #变量
 │   │       └── main.yml         #此文件变量的优先级高于上面group_vars的all里定义的变量
 │   └── web
@@ -32,13 +32,12 @@
 
 2.架构图分解
 
-2.1 组变量：webservers
+2.1 组变量：all或webservers
+
 ## -------------- global ------------##
 # set PPATH
-remotepath: /opt/product/
-localpath : /home/playbook/
 servicepath: /mnt/
-urlheader: http://10.28.22.208:8080
+urlheader: http://ip
 
 # deploy config
 deploy_group: root
@@ -88,7 +87,7 @@ ip地址  ansible_ssh_user=root	 ansible_ssh_pass=密码
 - hosts: excluded
   roles:
     - common
-    - excluded
+    - excluded               #在此组的handlers、tasks、vars的main.yml配置文件中指向common公共类中会自动调用common中的内容
   tags:
     - excluded
 
@@ -98,8 +97,8 @@ ip地址  ansible_ssh_user=root	 ansible_ssh_pass=密码
     - mrexcluded
   tags:
     - mrexcluded
-  或
-  ---
+    
+    或
 # Site Configuration
 - hosts: all
   roles:
@@ -109,4 +108,38 @@ ip地址  ansible_ssh_user=root	 ansible_ssh_pass=密码
   roles:
     - web
 
+2.4 roles定义common角色
+handlers：main.yml
+---
+- name: restart {{ module }}
+  shell: "/etc/init.d/spring4{{ module }} restart"
+#  ignore_errors: yes
+
+tasks：main.yml       
+---
+- name: install ntp
+  yum: name=ntp state=present
+  
+tasks：springboot.yml   #启动脚本（可不写，自行定义）
+
+templates:ntp.conf
+driftfile /var/lib/ntp/drift
+restrict 127.0.0.1
+
+vars:main.yml
+---
+module: common
+
+注：具体角色专项common公共类：如excluded
+handlers：main.yml
+---
+- include: ../../common/handlers/main.yml     #指向common中，excluded中找不到，会自动通过common执行
+
+tasks：main.yml
+---
+- include: ../../common/tasks/springboot.yml
+
+vars:main.yml
+---
+module: excluded   #定义变量
 
