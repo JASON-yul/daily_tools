@@ -1,0 +1,7 @@
+1. 下载要迁移代码
+git clone --bare https://gitlab远程仓库地址.git -b ansiblebeta
+
+2. 删除新建仓库的所有保护分支，包括master
+
+3. 将代码推送到新建仓库
+git push --mirror https://codehub-dg-y.新建仓库地址.git
