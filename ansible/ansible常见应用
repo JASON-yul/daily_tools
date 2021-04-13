@@ -44,7 +44,7 @@ remove参数：当state的值设置为absent时，表示要删除远程主机中
 当 state=absent 并且 remove=yes 时，相当于执行 “userdel --remove” 命令
 
 
-2. 通过jinja2过滤器实现查找功能
+2. 通过jinja2过滤器,实现过滤查找功能
 #] vim  find.yml
 ---
 # Site Configuration
