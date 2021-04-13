@@ -1,4 +1,4 @@
-ansible
+1. ansible
 参考文献：https://www.jianshu.com/p/9e58a598e448
 sed -i 's/.*\(host_key_checking\)/\1/' /etc/ansible/ansible.cfg
 [root@m01 /server/scripts]# cat one_key.sh 
@@ -44,3 +44,20 @@ remove参数：当state的值设置为absent时，表示要删除远程主机中
 当 state=absent 并且 remove=yes 时，相当于执行 “userdel --remove” 命令
 
 
+2. 通过jinja2过滤器实现查找功能
+#] vim  find.yml
+---
+# Site Configuration
+- hosts: webservers
+  vars:
+    filename: /etc/profile/jim
+  tasks:
+    - name: "shell"
+      shell: echo {{ filename | basename }} >> /mnt/testshell
+    - name: "shell"
+      shell: echo {{ filename | dirname }} >>/mnt/testshell
+      
+  ]# ansible-playbook -i hosts site.yml
+  ]# cat testshell
+  jim
+  /etc/profile
