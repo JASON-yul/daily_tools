@@ -61,3 +61,35 @@ remove参数：当state的值设置为absent时，表示要删除远程主机中
   ]# cat testshell
   jim
   /etc/profile
+
+3. 判断执行脚本或命令输出结果是否为真
+vim site.yml
+---
+# Site Configuration
+- hosts: webservers
+  vars:
+    filename: /etc/profile/jim
+  tasks:
+    - name: "dflk"
+      shell: echo $PATH
+      register: foo_b          #注册变量。变量值为echo $PATH命令执行结果，0或非零
+      ignore_errors: True      #无论对错都忽略
+    - name: "lk"
+      shell: echo "yes"
+      when: foo_b.rc == 0       #判断上述变量的.rc值是否为0（真），为0则执行echo "yes"
+
+]# ansible-playbook -i hosts site.yml -vvv   #执行此命令可看到“dflk”下命令的执行结果
+ changed: [10.28.2.165] => {
+    "cmd": "echo \"yes\"",{ 
+.........
+    }, 
+    "rc": 0,                       #输出结果d的.rc值
+......
+    "stdout": "yes", 
+    "stdout_lines": [
+        "yes"
+    ]
+}
+
+
+
