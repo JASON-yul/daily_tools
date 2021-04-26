@@ -1,4 +1,4 @@
-
+创建、删除参照：https://blog.csdn.net/haibeimingsi/article/details/38402667
 #!/bin/bash
 
 DISK1="/dev/vdb"
