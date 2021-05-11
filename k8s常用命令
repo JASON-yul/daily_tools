@@ -1,0 +1,4 @@
+1.证书反解
+echo "client-certificate-data:内容"|base64 -d > 123.pem
+2.展示证书内容
+cfssl-certinfo -cert 123.pem
