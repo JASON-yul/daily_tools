@@ -1,1 +1,14 @@
 https://bbs.csdn.net/topics/390848181
+
+#!/bin/bash
+set -ex
+num=0.8
+a=0.05
+for s in {1..18};do
+    echo $num
+    for i in `cat deleteosd.sh` ;do
+        ceph osd  crush reweight $i $num
+        sleep 120
+    done
+    num=$(echo "$num - $a" | bc|awk '{printf "%.2f", $0}')
+done
