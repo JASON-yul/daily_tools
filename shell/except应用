@@ -1,0 +1,16 @@
+#!/usr/bin/expect 
+set password "Huawei12#$"
+set ip  "10.3.23.46"
+set ips [lrange $argv 0 0]
+spawn ssh zxy@$ips sudo su
+    expect {
+       "(yes/no)" {send "yes\r"}
+       "*assword" {send "$password\r"}
+     }
+    expect "]#"
+    send "ntpdate $ip\r"
+    send "exit\r"
+expect eof
+
+    #interact  
+exit
