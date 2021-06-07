@@ -7,10 +7,10 @@ spawn ssh zxy@$ips sudo su
        "(yes/no)" {send "yes\r"}
        "*assword" {send "$password\r"}
      }
-    expect "]#"
+    expect "]#"                          #执行完sudo su 执行后继续执行的命令
     send "ntpdate $ip\r"
     send "exit\r"
 expect eof
 
-    #interact  
+    #interact                          #登录不退出命令
 exit
