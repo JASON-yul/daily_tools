@@ -26,3 +26,14 @@ id pool image                            snap device
 1  rbd  jenkins-master-xxxxx         -    /dev/rbd1
 
 解决方案：取消挂载rbd unmap /dev/rbd1，重新创建Jenkinsmaster
+
+若是无法取消挂载，参见
+https://www.cnblogs.com/sisimi/p/7776633.html
+
+1.查看该image的header对象上的watcher信息
+rados -p rbd listwatchers rbd_header.1041643c9869
+watcher=192.168.197.157:0/1135656048 client.4172 cookie=1
+
+2.把该watcher加入黑名单
+]# ceph osd blacklist add 192.168.197.157:0/1135656048 
+blacklisting 192.168.197.157:0/1135656048 until 2017-10-18 12:04:19.103313 (3600 sec)
