@@ -1,1 +1,6 @@
+1.ip详细信息
 /sbin/ip -o -4 addr list eth0
+
+2.IP地址
+# ifconfig
+# hostname -i
