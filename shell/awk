@@ -1,0 +1,9 @@
+# cat /etc/kubernetes/authfiles/token.csv
+e04195.dde7002c885ce6cc,ilinux,1009,"kubernetes,defaultadmin"
+cbf8d7.6ea1a39f1eb06694,ik8s,1010,"kubernetes,defaultadmin"
+
+# awk -F"," '$2=="ik8s"{print $1}' /etc/kubernetes/authfiles/token.csv
+cbf8d7.6ea1a39f1eb06694
+
+# awk -F"," '$3=="1009"{print $1}' /etc/kubernetes/authfiles/token.csv
+e04195.dde7002c885ce6cc
