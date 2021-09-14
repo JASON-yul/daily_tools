@@ -1,3 +1,5 @@
+秘钥配置参考：https://blog.csdn.net/nahancy/article/details/79059135
+
 注：1.执行机尽量不要部署
     2.部署前先保证执行机能够免密登录.避免后面无法登录
     3.部署前所有机器配置相同的私钥id_rsa(保存起来用于登录各个机器)和公钥id_rsa.pub拷贝到各个机器的authorized_keys用于识别私钥登录
