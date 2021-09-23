@@ -1,0 +1,8 @@
+docker run -itd -p 800:80 -e  -ms100g -mx100g  -v /etc/local:/etc/time --privileged --user=jenkins  {images}
+解析：-i表示为容器打开标准输入
+     -t与run命令相同
+     -d容器以后台模式运行
+     -e 添加启动参数
+     -v 挂载
+     -p表示宿主机上的800端口与容器的80端口进行映射
+     --privileged 指定启动用户权限
