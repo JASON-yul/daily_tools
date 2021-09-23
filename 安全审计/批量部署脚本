@@ -1,0 +1,25 @@
+---
+- hosts: k8s
+  remote_user: root
+  serial: 5
+  tasks:
+    - name: 创建目录
+      shell: "mkdir -p /mnt/src"
+    - name: 主机初始化|拷贝目录文件
+      synchronize:
+        src: /mnt/ansibe-plybook/security/libtirpc-0.2.2.tar.bz2
+        dest: /mnt/src
+    - name: 主机初始化|拷贝目录文件
+      synchronize:
+        src: /mnt/ansibe-plybook/security/openssh-8.4p1.tar.gz
+        dest: /mnt/src
+    - name: 主机初始化|拷贝目录文件
+      synchronize:
+        src: /mnt/ansibe-plybook/security/20191012174833linux_sacc_7.2.4.2-release.tar.gz
+        dest: /mnt/src
+    - name: 主机初始化|拷贝目录文件
+      synchronize:
+        src: /mnt/ansibe-plybook/security/security.sh
+        dest: /root/.ssh
+    - name:
+      shell: "/bin/bash /root/.ssh/security.sh"
