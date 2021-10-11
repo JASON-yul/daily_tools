@@ -1,0 +1,2 @@
+快速将远程172.28.19.50目录下内容拷贝到本机内
+rsync  -rtP            172.28.19.50:/data/deploy-package  /home/deploy-package
