@@ -8,7 +8,7 @@ cbf8d7.6ea1a39f1eb06694
 # awk -F"," '$3=="1009"{print $1}' /etc/kubernetes/authfiles/token.csv
 e04195.dde7002c885ce6cc
 
-
+#通过kubectl  get pod过滤k8s的deploy名称，
 #!/bin/bash
 NFALL=`kubectl -n rootcloud-v4  get pod |awk '{print $1}'|awk -F"-" '{print NF}'`
 a=1
@@ -17,9 +17,11 @@ do
   num=1
   num=$[$i-$num]
   name=`kubectl -n rootcloud-v4  get pod |awk NR==$a'{print $1}'`
-#-v指定传递参数
   names=`echo $name|awk -F"-" -v b=$num '{print $b}'`
   a=$[$a+1]
-  namescc=`kubectl -n rootcloud-v4  get pod|awk '{print $1}'|awk -F"'$names'" '{print $1}'`
-  echo $namescc
+#  echo $names
+  namescc=`kubectl -n rootcloud-v4 get pod |awk '{print $1}'|grep ${names}|awk -F"-${names}" '{print $1}'`
+  echo $namescc>>name.sh
 done
+#echo $namescc >name.sh
+cat name.sh|uniq
